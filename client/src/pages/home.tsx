@@ -3,14 +3,16 @@ import { useEffect } from "react";
 import { setupWebSocket, useWebhookStore } from "@/lib/websocket";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { WifiOff, Wifi, Copy } from "lucide-react";
+import { WifiOff, Wifi, Copy, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Webhook } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Home() {
   const connected = useWebhookStore((state: { connected: boolean }) => state.connected);
   const storeWebhooks = useWebhookStore((state: { webhooks: Webhook[] }) => state.webhooks);
+  const clearWebhooks = useWebhookStore((state) => state.clearWebhooks);
   const { toast } = useToast();
 
   const { data: apiWebhooks } = useQuery<Webhook[]>({
@@ -68,6 +70,15 @@ export default function Home() {
     }
   };
 
+  const handleClear = () => {
+    clearWebhooks();
+    queryClient.setQueryData(["/api/webhooks"], []);
+    toast({
+      title: "Cleared",
+      description: "All webhooks have been cleared from the display",
+    });
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
@@ -103,7 +114,13 @@ export default function Home() {
               Send POST requests to this URL with any JSON body to test your webhooks.
               All requests will be captured and displayed below in real-time.
             </p>
-            <Button onClick={testWebhook}>Send Test Webhook</Button>
+            <div className="flex gap-2">
+              <Button onClick={testWebhook}>Send Test Webhook</Button>
+              <Button variant="outline" onClick={handleClear}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear All
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -6,6 +6,7 @@ interface WebhookStore {
   webhooks: Webhook[];
   setConnected: (connected: boolean) => void;
   addWebhook: (webhook: Webhook) => void;
+  clearWebhooks: () => void;
 }
 
 export const useWebhookStore = create<WebhookStore>((set) => ({
@@ -14,7 +15,8 @@ export const useWebhookStore = create<WebhookStore>((set) => ({
   setConnected: (connected: boolean) => set({ connected }),
   addWebhook: (webhook: Webhook) => set((state) => ({ 
     webhooks: [webhook, ...state.webhooks] 
-  }))
+  })),
+  clearWebhooks: () => set({ webhooks: [] })
 }));
 
 export function setupWebSocket() {
