@@ -3,12 +3,15 @@ import { useEffect } from "react";
 import { setupWebSocket, useWebhookStore } from "@/lib/websocket";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { WifiOff, Wifi } from "lucide-react";
+import { WifiOff, Wifi, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Webhook } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const connected = useWebhookStore((state: { connected: boolean }) => state.connected);
   const storeWebhooks = useWebhookStore((state: { webhooks: Webhook[] }) => state.webhooks);
+  const { toast } = useToast();
 
   const { data: apiWebhooks } = useQuery<Webhook[]>({
     queryKey: ["/api/webhooks"],
@@ -30,6 +33,41 @@ export default function Home() {
     return JSON.stringify(data, null, 2);
   };
 
+  const webhookUrl = `${window.location.protocol}//${window.location.host}/api/webhook/test`;
+
+  const copyWebhookUrl = async () => {
+    await navigator.clipboard.writeText(webhookUrl);
+    toast({
+      title: "Copied!",
+      description: "Webhook URL copied to clipboard",
+    });
+  };
+
+  const testWebhook = async () => {
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: "Test webhook",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+      toast({
+        title: "Success!",
+        description: "Test webhook sent successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send test webhook",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
@@ -48,6 +86,27 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Your Webhook URL</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 mb-4">
+            <code className="bg-muted px-4 py-2 rounded flex-1">{webhookUrl}</code>
+            <Button variant="outline" size="icon" onClick={copyWebhookUrl}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">
+              Send POST requests to this URL with any JSON body to test your webhooks.
+              All requests will be captured and displayed below in real-time.
+            </p>
+            <Button onClick={testWebhook}>Send Test Webhook</Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6">
         {webhooks?.map((webhook) => (
