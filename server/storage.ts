@@ -3,6 +3,7 @@ import { webhooks, type Webhook, type InsertWebhook } from "@shared/schema";
 export interface IStorage {
   getWebhooks(): Promise<Webhook[]>;
   createWebhook(webhook: InsertWebhook): Promise<Webhook>;
+  clearWebhooks(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -28,6 +29,11 @@ export class MemStorage implements IStorage {
     };
     this.webhooks.set(id, webhook);
     return webhook;
+  }
+
+  async clearWebhooks(): Promise<void> {
+    this.webhooks.clear();
+    this.currentId = 1;
   }
 }
 

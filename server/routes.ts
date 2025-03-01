@@ -27,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const parsed = insertWebhookSchema.parse(webhook);
       const created = await storage.createWebhook(parsed);
-      
+
       broadcast({
         type: "webhook",
         data: created
@@ -42,6 +42,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/webhooks", async (_req, res) => {
     const webhooks = await storage.getWebhooks();
     res.json(webhooks);
+  });
+
+  app.post("/api/webhooks/clear", async (_req, res) => {
+    await storage.clearWebhooks();
+    broadcast({
+      type: "clear"
+    });
+    res.json({ message: "All webhooks cleared" });
   });
 
   return httpServer;

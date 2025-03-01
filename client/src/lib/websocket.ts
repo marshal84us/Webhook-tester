@@ -39,6 +39,8 @@ export function setupWebSocket() {
       const message = JSON.parse(event.data);
       if (message.type === "webhook") {
         useWebhookStore.getState().addWebhook(message.data);
+      } else if (message.type === "clear") {
+        useWebhookStore.getState().clearWebhooks();
       }
     } catch (error) {
       console.error("Failed to parse websocket message:", error);

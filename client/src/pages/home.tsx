@@ -70,13 +70,22 @@ export default function Home() {
     }
   };
 
-  const handleClear = () => {
-    clearWebhooks();
-    queryClient.setQueryData(["/api/webhooks"], []);
-    toast({
-      title: "Cleared",
-      description: "All webhooks have been cleared from the display",
-    });
+  const handleClear = async () => {
+    try {
+      await fetch("/api/webhooks/clear", { method: "POST" });
+      clearWebhooks();
+      queryClient.setQueryData(["/api/webhooks"], []);
+      toast({
+        title: "Cleared",
+        description: "All webhooks have been cleared",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to clear webhooks",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
