@@ -1,3 +1,4 @@
+import { response } from "express";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -9,12 +10,24 @@ function Login({ onLogin }) {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    if (username === "admin" && password === "ZALcn0QsfgKUTS8") {
-      onLogin();
-      setLocation("/");
-    } else {
-      setError("Invalid credentials");
-    }
+    fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.success) {
+          onLogin();
+        } else {
+          setError(response.message);
+        }
+      })
+      .catch((err) => {
+        setError(err);
+      });
   };
 
   return (

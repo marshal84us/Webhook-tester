@@ -16,6 +16,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   };
 
+  app.post("/api/login", (req, res) => {
+    const { username, password } = req.body;
+    if (username === "office" && password === "ZALcn0QsfgKUTS8") {
+      res.status(200).json({ message: "Login Successful", success: true });
+    } else {
+      res.status(401).json({ message: "Invalid Credentials", success: false });
+    }
+  });
+
   app.post("/api/webhook/*", async (req, res) => {
     try {
       const webhook = {
@@ -30,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       broadcast({
         type: "webhook",
-        data: created
+        data: created,
       });
 
       res.status(200).json({ message: "Webhook received" });
@@ -47,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/webhooks/clear", async (_req, res) => {
     await storage.clearWebhooks();
     broadcast({
-      type: "clear"
+      type: "clear",
     });
     res.json({ message: "All webhooks cleared" });
   });
