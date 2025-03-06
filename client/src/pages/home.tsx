@@ -77,7 +77,8 @@ export default function Home() {
     try {
       await fetch("/api/webhooks/clear", { method: "POST" });
       clearWebhooks();
-      queryClient.setQueryData(["/api/webhooks"], []);
+      // queryClient.setQueryData(["/api/webhooks"], []);
+      queryClient.invalidateQueries(["/api/webhooks"]);
       toast({
         title: "Cleared",
         description: "All webhooks have been cleared",

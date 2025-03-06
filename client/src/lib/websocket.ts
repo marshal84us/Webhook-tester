@@ -13,10 +13,13 @@ export const useWebhookStore = create<WebhookStore>((set) => ({
   connected: false,
   webhooks: [],
   setConnected: (connected: boolean) => set({ connected }),
-  addWebhook: (webhook: Webhook) => set((state) => ({ 
-    webhooks: [webhook, ...state.webhooks] 
-  })),
-  clearWebhooks: () => set({ webhooks: [] })
+  addWebhook: (webhook: Webhook) =>
+    set((state) => {
+      const exists = state.webhooks.some((w) => w.id === webhook.id);
+      if (exists) return state; // Prevent duplicates
+      return { webhooks: [webhook, ...state.webhooks] };
+    }),
+  clearWebhooks: () => set({ webhooks: [] }),
 }));
 
 export function setupWebSocket() {
