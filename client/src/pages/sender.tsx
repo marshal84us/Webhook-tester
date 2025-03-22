@@ -7,9 +7,14 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Sender() {
   const [url, setUrl] = useState("");
-  const [headers, setHeaders] = useState("{\n  \"Content-Type\": \"application/json\"\n}");
-  const [body, setBody] = useState("{\n  \"message\": \"Hello World\"\n}");
+  const [headers, setHeaders] = useState(
+    '{\n  "Content-Type": "application/json"\n}',
+  );
+  const [body, setBody] = useState('{\n  "message": "Hello World"\n}');
   const { toast } = useToast();
+  const [message, setMessage] = useState(
+    "Lead Created successfully lead id 45",
+  );
 
   const sendWebhook = async () => {
     try {
@@ -48,14 +53,18 @@ export default function Sender() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      const result = await response.json();
+      setMessage(result.message || "");
       toast({
         title: "Success!",
-        description: "Webhook sent successfully",
+        description: result.message,
+        duration: 6000,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to send webhook",
+        description:
+          error instanceof Error ? error.message : "Failed to send webhook",
         variant: "destructive",
       });
     }
@@ -64,14 +73,16 @@ export default function Sender() {
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Webhook Sender</h1>
-
+      <div className="bg-green-500 p-2 rounded m-2">{message && message}</div>
       <Card>
         <CardHeader>
           <CardTitle>Send a Webhook</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Webhook URL</label>
+            <label className="text-sm font-medium mb-2 block">
+              Webhook URL
+            </label>
             <Input
               placeholder="https://example.com/webhook"
               value={url}
@@ -80,7 +91,9 @@ export default function Sender() {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Headers (JSON)</label>
+            <label className="text-sm font-medium mb-2 block">
+              Headers (JSON)
+            </label>
             <Textarea
               placeholder="Enter headers as JSON"
               value={headers}
@@ -91,7 +104,9 @@ export default function Sender() {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Body (JSON)</label>
+            <label className="text-sm font-medium mb-2 block">
+              Body (JSON)
+            </label>
             <Textarea
               placeholder="Enter body as JSON"
               value={body}

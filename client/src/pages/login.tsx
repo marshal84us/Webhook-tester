@@ -1,4 +1,3 @@
-import { response } from "express";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -36,7 +35,7 @@ function Login({ onLogin }) {
         onSubmit={handleSubmit}
         className="p-6 bg-white rounded-lg shadow-md w-80"
       >
-        <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center">Login to the App</h2>
         {error && (
           <p className="text-red-500 text-sm mb-2 text-center">{error}</p>
         )}
