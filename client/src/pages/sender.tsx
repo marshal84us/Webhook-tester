@@ -12,9 +12,7 @@ export default function Sender() {
   );
   const [body, setBody] = useState('{\n  "message": "Hello World"\n}');
   const { toast } = useToast();
-  const [message, setMessage] = useState(
-    "Lead Created successfully lead id 45",
-  );
+  const [message, setMessage] = useState("");
 
   const sendWebhook = async () => {
     try {
