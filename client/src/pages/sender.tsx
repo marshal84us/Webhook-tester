@@ -140,6 +140,7 @@ export default function Sender() {
   );
   const [body, setBody] = useState('{\n  "message": "Hello World"\n}');
   const { toast } = useToast();
+  const [message, setMessage] = useState("");
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -184,6 +185,13 @@ export default function Sender() {
         if (response.status === 422) {
           // Handle validation errors
           setValidationErrors(result.fields || {});
+          Object.values(result.fields || {}).map((msg) => {
+            toast({
+              title: "Validation Failed",
+              description: msg,
+              variant: "destructive",
+            });
+          });
           return toast({
             title: "Validation Failed",
             description: result.message || "Please fix the errors in the form",
@@ -213,7 +221,12 @@ export default function Sender() {
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Webhook Sender</h1>
+      {message && <div className="bg-green-500 p-3 rounded">{message}</div>}
 
+      {Object.keys(validationErrors).length > 0 &&
+        Object.values(validationErrors).map((error, index) => (
+          <div className="bg-red-500 p-3 rounded">{error}</div>
+        ))}
       <Card>
         <CardHeader>
           <CardTitle>Send a Webhook</CardTitle>
